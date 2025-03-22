@@ -22,8 +22,8 @@ public abstract class Robot extends LinearOpMode {
 
     // Cascade Variables
 
-    static final int cascadeHighBasket = 510;
-    static final int cascadeLowBasket = 360;
+    static final int cascadeHighBasket = 890;
+    static final int cascadeLowBasket = 510;
     int cascadeDown = 0;
     double dumpDeposit = 0.07;
     double dumpIdle = 0.82;
@@ -32,12 +32,15 @@ public abstract class Robot extends LinearOpMode {
 
     // ExtendingIntake Variables
 
-    public static int slideExtend = 850;
+    public static int slideExtend = 980;
+    public  static int slideTarget;
     int slideIdle = 0;
+
+    public static double pitchStart = 0.85;
     public static double pitchIdle = 0.7;
     public static double pitchTransfer = 1;
     public static double pitchExtend = 0.5;
-    public static double pitchCollect = 0.389;
+    public static double pitchCollect = 0.35;
     public static double pitchTarget = pitchCollect;
 
     double intakeTimer = 1;
@@ -53,6 +56,9 @@ public abstract class Robot extends LinearOpMode {
         INTAKE_IDLE, INTAKE_EXTEND, INTAKE_COLLECT, INTAKE_RETRACT, INTAKE_TRANSFER
     }
     IntakeState intakeState = IntakeState.INTAKE_IDLE;
+
+    public static int cascadeTarget;
+
 
     public void initHardware() {
 
@@ -77,7 +83,7 @@ public abstract class Robot extends LinearOpMode {
         intakePitch = hardwareMap.get(Servo.class, "intakePitch");
         activeIntake = hardwareMap.get(CRServo.class, "activeIntake");
 
-        cascade.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+     //   cascade.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         cascade.setTargetPosition(0);
         cascade.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
@@ -86,9 +92,13 @@ public abstract class Robot extends LinearOpMode {
         intakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         cascadeDump.setPosition(dumpIdle);
-        intakePitch.setPosition(pitchIdle);
+        intakePitch.setPosition(pitchStart);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         pitchTarget = pitchCollect;
+
     }
+
+
+
 }

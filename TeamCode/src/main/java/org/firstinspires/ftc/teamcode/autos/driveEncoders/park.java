@@ -1,9 +1,11 @@
-package org.firstinspires.ftc.teamcode.autos;
+package org.firstinspires.ftc.teamcode.autos.driveEncoders;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
+@Disabled
 @Autonomous(name = "park")
-public class park extends RobotAuto{
+public class park extends RobotAuto {
 
     @Override
     public void init() {
@@ -16,6 +18,7 @@ public class park extends RobotAuto{
         updateTelemetry();
     }
 
+
         public void updateTelemetry() {
         telemetry.addData("leftFront: ", leftFront.getCurrentPosition());
         telemetry.addData("leftBack: ", leftBack.getCurrentPosition());
@@ -25,8 +28,6 @@ public class park extends RobotAuto{
         telemetry.addData("leftBackTarget: ", leftBack.getTargetPosition());
         telemetry.addData("rightFrontTarget: ", rightFront.getTargetPosition());
         telemetry.addData("rightBackTarget: ", leftFront.getTargetPosition());
-        telemetry.addData("SlidePosition", intakeSlide.getCurrentPosition());
-        telemetry.addData("SlideTarget", intakeSlide.getTargetPosition());
         telemetry.addData("AutoState: ", autonomousState);
         telemetry.update();
     }
@@ -35,7 +36,7 @@ public class park extends RobotAuto{
         switch (autonomousState) {
             case 1:
                 moveForward(20, 1);
-                setAutonomousState(1);
+                setAutonomousState(2);
                 break;
             case 2:
                 if (targetReached()) {

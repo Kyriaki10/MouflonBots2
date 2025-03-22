@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.autos;
+package org.firstinspires.ftc.teamcode.autos.driveEncoders;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -11,7 +11,9 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
@@ -22,6 +24,7 @@ public abstract class RobotAuto extends OpMode {
   public  CRServo activeIntake;
   public   IMU imu;
 
+  public VoltageSensor voltageSensor;
 
     int cascadeUp = 880;
     int cascadeDown = 0;
@@ -32,9 +35,10 @@ public abstract class RobotAuto extends OpMode {
 
     int slideTransfer = 300;
     int slideIdle = 0;
+    double pitchStart = 0.85;
     double pitchIdle = 0.7;
-    double pitchTransfer = 0.99;
-    double pitchCollect = 0.386;
+    double pitchTransfer = 0.97;
+    public static double pitchCollect = 0.347;
 
     double intakeTimer = 1;
 
@@ -51,8 +55,6 @@ public abstract class RobotAuto extends OpMode {
     ElapsedTime runTime = new ElapsedTime();
 
     double angle = 0;
-
-    public double error = 0;
 
     public void initHardware() {
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
@@ -99,8 +101,11 @@ public abstract class RobotAuto extends OpMode {
         intakeSlide.setTargetPosition(slideIdle);
         intakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
+        intakeSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        cascade.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         cascadeDump.setPosition(dumpIdle);
-        intakePitch.setPosition(pitchIdle);
+        intakePitch.setPosition(pitchStart);
 
         runTime.reset();
 
@@ -110,8 +115,9 @@ public abstract class RobotAuto extends OpMode {
                 RevHubOrientationOnRobot.UsbFacingDirection.UP)));
         imu.resetYaw();
 
-
         telemetry = new MultipleTelemetry(FtcDashboard.getInstance().getTelemetry());
+
+        voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
     }
 
     public void updateTelemetry() {
@@ -151,7 +157,7 @@ public abstract class RobotAuto extends OpMode {
         rightFront.setTargetPosition(rightFrontTarget);
         rightBack.setTargetPosition(rightBackTarget);
 
-        double minPower = 0.5;
+        double minPower = 0.6;
         double rampTime = 0.4;
         double startTime = runTime.seconds();
 
@@ -183,30 +189,24 @@ public abstract class RobotAuto extends OpMode {
             leftBack.setPower(speed);
             rightFront.setPower(speed);
             rightBack.setPower(speed);
-
-
     }
 
-    public void turn(int degrees, double maxSpeed) {
+    public void turn(double degrees, double maxSpeed) {
 
         angle += degrees;
 
-        leftFrontTarget += degrees * TICKS_PER_DEGREE;
-        leftBackTarget += degrees * TICKS_PER_DEGREE;
-        rightFrontTarget -= degrees * TICKS_PER_DEGREE;
-        rightBackTarget -= degrees * TICKS_PER_DEGREE;
+        leftFrontTarget += (int) degrees * TICKS_PER_DEGREE;
+        leftBackTarget += (int) degrees * TICKS_PER_DEGREE;
+        rightFrontTarget -= (int) degrees * TICKS_PER_DEGREE;
+        rightBackTarget -= (int) degrees * TICKS_PER_DEGREE;
 
         leftFront.setTargetPosition(leftFrontTarget);
         leftBack.setTargetPosition(leftBackTarget);
         rightFront.setTargetPosition(rightFrontTarget);
         rightBack.setTargetPosition(rightBackTarget);
 
-        leftFront.setPower(1);
-        leftBack.setPower(1);
-        rightFront.setPower(1);
-        rightBack.setPower(1);
 
-        double minPower = 0.5;
+        double minPower = 0.6;
         double rampTime = 0.4;
         double startTime = runTime.seconds();
 
@@ -228,8 +228,8 @@ public abstract class RobotAuto extends OpMode {
         double leftFrontPower, leftBackPower, rightFrontPower, rightBackPower;
         if (Math.abs(Math.tan(radians + Math.PI / 4)) > 1) {
             leftFrontPower = 1;
-            leftBackPower = cot(radians + Math.PI);
-            rightFrontPower = cot(radians + Math.PI);
+            leftBackPower = cot(radians);
+            rightFrontPower = cot(radians);
             rightBackPower = 1;
         } else {
             leftFrontPower = Math.tan(radians + Math.PI / 4);
@@ -255,7 +255,7 @@ public abstract class RobotAuto extends OpMode {
         rightFront.setTargetPosition(rightFrontTarget);
         rightBack.setTargetPosition(rightBackTarget);
 
-        double minPower = 0.5;
+        double minPower = 0.6;
         double rampTime = 0.4;
         double startTime = runTime.seconds();
 
@@ -289,6 +289,11 @@ public abstract class RobotAuto extends OpMode {
 
         cascadeDump.setPosition(dumpIdle);
         intakePitch.setPosition(pitchIdle);
+    }
+
+    public double voltagePowerAdjustment(){
+        double voltage = voltageSensor.getVoltage();
+        return Range.clip(Math.pow(12.5/voltage, 1.8), -1, 1);
     }
 }
 

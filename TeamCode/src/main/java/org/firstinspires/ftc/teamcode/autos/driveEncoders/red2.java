@@ -1,9 +1,12 @@
-package org.firstinspires.ftc.teamcode.autos;
+package org.firstinspires.ftc.teamcode.autos.driveEncoders;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
-@Autonomous(name = "0+3")
-public class sample3 extends RobotAuto{
+
+@Disabled
+@Autonomous(name = "red2")
+public class red2 extends RobotAuto {
 
     @Override
     public void init() {
@@ -15,16 +18,23 @@ public class sample3 extends RobotAuto{
         autoTest();
         updateTelemetry();
     }
+
+    @Override
+    public void stop() {
+        stopAll();
+
+    }
     private void autoTest() {
         switch (autonomousState) {
             // score preload
             case 1:
-                strafeTo(34, -70, 0.9);
+                strafeTo(36, -70, 0.9);
                 setAutonomousState(2);
                 break;
             case 2:
                 if (targetReached()) {
                     turn(42, 1);
+                    intakePitch.setPosition(pitchIdle);
                     cascade.setTargetPosition(cascadeUp);
                     cascade.setPower(1);
                     autoTimer.reset();
@@ -32,7 +42,7 @@ public class sample3 extends RobotAuto{
                 }
                 break;
             case 3:
-                if (targetReached() && Math.abs(cascade.getCurrentPosition() - cascadeUp) < 70) {
+                if (targetReached() && Math.abs(cascade.getCurrentPosition() - cascadeUp) < 300) {
                     cascadeDump.setPosition(dumpDeposit);
                     autoTimer.reset();
                     setAutonomousState(4);
@@ -40,16 +50,16 @@ public class sample3 extends RobotAuto{
                 break;
             case 4:
                 // pickup sample 1
-                if (autoTimer.seconds() >= 1.2) {
-                    turn(-112, 1);
+                if (autoTimer.seconds() >= 1) {
+                    turn(-111, 1);
                     setAutonomousState(5);
                 }
                 break;
             case 5:
                 if (targetReached()) {
-                    strafeTo(45.7, 113, 1);
+                    strafeTo(44.5, 115, 1);
                     cascade.setTargetPosition(cascadeDown);
-                    cascade.setPower(0.6);
+                    cascade.setPower(-0.6);
                     cascadeDump.setPosition(dumpIdle);
                     activeIntake.setPower(-1);
                     intakePitch.setPosition(pitchCollect);
@@ -57,8 +67,8 @@ public class sample3 extends RobotAuto{
                 }
                 break;
             case 6:
-                if (Math.abs(cascade.getCurrentPosition() - cascadeDown) < 20 && targetReached()) {
-                    moveForwardSlow(11, 0.25);
+                if (Math.abs(cascade.getCurrentPosition() - cascadeDown) < 200 && targetReached()) {
+                    moveForwardSlow(10, 0.1);
                     setAutonomousState(7);
                 }
                 break;
@@ -69,9 +79,9 @@ public class sample3 extends RobotAuto{
                     setAutonomousState(8);
                 }
                 break;
-                // score sample 1
+            // score sample 1
             case 8:
-                if (autoTimer.seconds() >= 0.7) {
+                if (autoTimer.seconds() >= 0.5) {
                     activeIntake.setPower(1);
                     turn(106, 1);
                     autoTimer.reset();
@@ -87,7 +97,7 @@ public class sample3 extends RobotAuto{
                 break;
             case 10:
                 if (targetReached()) {
-                    moveForward(-24.5, 1);
+                    moveForward(-23.5, 1);
                     cascade.setTargetPosition(cascadeUp);
                     cascade.setPower(1);
                     autoTimer.reset();
@@ -95,24 +105,24 @@ public class sample3 extends RobotAuto{
                 }
                 break;
             case 11:
-                if (targetReached() && Math.abs(cascade.getCurrentPosition() - cascadeUp) < 70 && autoTimer.seconds() >= 0.3) {
+                if (targetReached() && Math.abs(cascade.getCurrentPosition() - cascadeUp) < 500 && autoTimer.seconds() >= 0.3) {
                     cascadeDump.setPosition(dumpDeposit);
                     autoTimer.reset();
                     setAutonomousState(12);
                 }
                 break;
-                // pickup sample 2
+            // pickup sample 2
             case 12:
-                if (autoTimer.seconds() >= 1.2) {
+                if (autoTimer.seconds() >= 1) {
                     turn(-125, 1);
                     setAutonomousState(13);
                 }
                 break;
             case 13:
                 if (targetReached()) {
-                    strafeTo(44, 117, 1);
+                    strafeTo(43, 117 , 1);
                     cascade.setTargetPosition(cascadeDown);
-                    cascade.setPower(0.6);
+                    cascade.setPower(-0.6);
                     cascadeDump.setPosition(dumpIdle);
                     activeIntake.setPower(-1);
                     intakePitch.setPosition(pitchCollect);
@@ -121,8 +131,8 @@ public class sample3 extends RobotAuto{
                 }
                 break;
             case 14:
-                if (targetReached()  && Math.abs(cascade.getCurrentPosition() - cascadeDown) < 75) {
-                    moveForwardSlow(12, 0.15);
+                if (targetReached()  && Math.abs(cascade.getCurrentPosition() - cascadeDown) < 50) {
+                    moveForwardSlow(10, 0.1);
                     setAutonomousState(15);
                 }
                 break;
@@ -133,18 +143,18 @@ public class sample3 extends RobotAuto{
                     setAutonomousState(16);
                 }
                 break;
-                // score sample 2
+            // score sample 2
             case 16:
-                if (autoTimer.seconds() >= 0.7) {
+                if (autoTimer.seconds() >= 0.4) {
                     activeIntake.setPower(1);
-                    strafeTo(-39, 95, 0.9);
+                    strafeTo(-40.5, 93, 0.9);
                     autoTimer.reset();
                     setAutonomousState(17);
                 }
                 break;
             case 17:
                 if (autoTimer.seconds() >= 0.5 && targetReached()) {
-                    turn(128, 1);
+                    turn(126, 1);
                     activeIntake.setPower(0);
                     intakePitch.setPosition(pitchIdle);
                     cascade.setTargetPosition(cascadeUp);
@@ -153,22 +163,22 @@ public class sample3 extends RobotAuto{
                 }
                 break;
             case 18:
-                if (targetReached() && Math.abs(cascade.getCurrentPosition() - cascadeUp) < 75) {
+                if (targetReached() && Math.abs(cascade.getCurrentPosition() - cascadeUp) < 350) {
                     cascadeDump.setPosition(dumpDeposit);
                     autoTimer.reset();
                     setAutonomousState(19);
                 }
                 break;
             case 19:
-                if (autoTimer.seconds() >= 1.2) {
+                if (autoTimer.seconds() >= 1) {
                     cascade.setTargetPosition(cascadeDown);
-                    cascade.setPower(0.65);
+                    cascade.setPower(-0.6);
                     cascadeDump.setPosition(dumpIdle);
                     setAutonomousState(20);
                 }
                 break;
             case 20:
-                if (Math.abs(cascade.getCurrentPosition() - cascadeDown) < 75) {
+                if (Math.abs(cascade.getCurrentPosition() - cascadeDown) < 10) {
                     setAutonomousState(-1);
                 }
                 break;

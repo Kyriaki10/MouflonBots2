@@ -1,13 +1,14 @@
 package org.firstinspires.ftc.teamcode.teleops;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+
+import java.util.jar.JarFile;
 
 @TeleOp(name = "TeleOp")
 public class Mouflon1 extends Robot {
 
     @Override
-
-    public void runOpMode() {
-
+    public void runOpMode() throws InterruptedException {
         initHardware();
 
         waitForStart();
@@ -19,12 +20,12 @@ public class Mouflon1 extends Robot {
             intakeControl();
 
             updateTelemetry();
-
         }
         stopAll();
     }
 
-    private double drivetrainControl2() {
+
+    private void drivetrainControl2() {
         if (intakeState == IntakeState.INTAKE_EXTEND ||
                 intakeState == IntakeState.INTAKE_COLLECT ||
                 cascadeState == CascadeState.CASCADE_EXTEND_HIGH ||
@@ -43,14 +44,13 @@ public class Mouflon1 extends Robot {
         double power = Math.hypot(x, y);
         double sin = Math.sin(radians + Math.PI / 4);
         double cos = Math.cos(radians + Math.PI / 4);
-        double max = Math.max(1.0, Math.max(Math.abs(sin), Math.abs(cos)) + rx); // Prevent division by zero
+        double max = Math.max(Math.abs(sin), Math.abs(cos));
 
-        leftFront.setPower((power * sin + rx) / max);
-        leftBack.setPower((-power * cos + rx) / max);
-        rightFront.setPower((-power * cos - rx) / max);
-        rightBack.setPower((power * sin - rx) / max);
+        leftFront.setPower((power * sin / max) + rx);
+        leftBack.setPower((-power * cos / max) + rx);
+        rightFront.setPower((-power * cos / max) - rx);
+        rightBack.setPower((power * sin / max) - rx);
 
-        return power * sin / max;
     }
 
 
@@ -69,14 +69,14 @@ public class Mouflon1 extends Robot {
                 }
                 break;
             case CASCADE_EXTEND_HIGH:
-                if (Math.abs(cascade.getCurrentPosition() - cascadeHighBasket) < 100) {
+                if (Math.abs(cascade.getCurrentPosition() - cascadeHighBasket) < 50) {
                     cascadeDump.setPosition(dumpDeposit);
                     cascadeTimer.reset();
                     cascadeState = CascadeState.CASCADE_DEPOSIT;
                 }
                 break;
             case CASCADE_EXTEND_LOW:
-                if (Math.abs(cascade.getCurrentPosition() - cascadeLowBasket) < 100) {
+                if (Math.abs(cascade.getCurrentPosition() - cascadeLowBasket) < 50) {
                     cascadeDump.setPosition(dumpDeposit);
                     cascadeTimer.reset();
                     cascadeState = CascadeState.CASCADE_DEPOSIT;
@@ -90,18 +90,22 @@ public class Mouflon1 extends Robot {
                 break;
             case CASCADE_RETRACT:
                 cascade.setTargetPosition(cascadeDown);
-                cascade.setPower(0.6);
+                cascade.setPower(0.4);
                 cascadeState = CascadeState.CASCADE_TRANSFER;
                 break;
             case CASCADE_TRANSFER:
-                if (Math.abs(cascade.getCurrentPosition() - cascadeDown) < 10) {
+                if (Math.abs(cascade.getCurrentPosition() - cascadeDown) < 5) {
+                    cascade.setPower(0);
+                    cascade.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    cascade.setTargetPosition(0);
+                    cascade.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     cascadeState = CascadeState.CASCADE_IDLE;
                 }
                 break;
         }
         if (gamepad2.dpad_down) {
-            cascade.setTargetPosition(-5);
-            cascade.setPower(1);
+            cascade.setTargetPosition(0);
+            cascade.setPower(0.5);
             cascadeDump.setPosition(dumpIdle);
             cascadeState = CascadeState.CASCADE_IDLE;
         }
@@ -144,8 +148,12 @@ public class Mouflon1 extends Robot {
                 }
                 break;
             case INTAKE_RETRACT:
-                if (Math.abs(intakeSlide.getCurrentPosition() - slideIdle) < 10) {
+                if (Math.abs(intakeSlide.getCurrentPosition() - slideIdle) < 5) {
                     activeIntake.setPower(1);
+                    intakeSlide.setPower(0);
+                    intakeSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    intakeSlide.setTargetPosition(0);
+                    intakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     transferTimer.reset();
                     intakeState = IntakeState.INTAKE_TRANSFER;
                 }
@@ -165,7 +173,18 @@ public class Mouflon1 extends Robot {
             intakePitch.setPosition(pitchExtend);
             intakeState = IntakeState.INTAKE_EXTEND;
         }
+        if (gamepad1.dpad_up) {
+            slideTarget = intakeSlide.getTargetPosition() + 15;
+            intakeSlide.setTargetPosition(slideTarget);
+            intakeSlide.setPower(0.5);
+        }
+        if (gamepad1.dpad_down) {
+            slideTarget = intakeSlide.getTargetPosition() - 15;
+            intakeSlide.setTargetPosition(slideTarget);
+            intakeSlide.setPower(0.5);
+        }
     }
+
 
     private void updateTelemetry() {
 
@@ -177,11 +196,7 @@ public class Mouflon1 extends Robot {
         telemetry.addData("Pitch Position", intakePitch.getPosition());
         telemetry.addData("Cascade Position", cascade.getCurrentPosition());
         telemetry.addData("Cascade Target", cascade.getTargetPosition());
-        telemetry.addData("Test", drivetrainControl2());
-        telemetry.addData("RX", gamepad1.right_stick_x);
-        telemetry.addData("RY", gamepad1.right_stick_y);
-        telemetry.addData("LX", gamepad1.left_stick_x);
-        telemetry.addData("LY", gamepad1.left_stick_y);
+        telemetry.addData("CascadeState", cascadeState);
         telemetry.update();
 
     }
