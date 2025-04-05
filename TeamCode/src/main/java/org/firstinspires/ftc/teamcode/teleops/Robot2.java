@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Config
-public abstract class Robot extends LinearOpMode {
+public abstract class Robot2 extends LinearOpMode {
 
     DcMotor leftFront, leftBack, rightFront, rightBack;
     public DcMotorEx intakeSlide, cascade;
@@ -22,8 +22,8 @@ public abstract class Robot extends LinearOpMode {
 
     // Cascade Variables
 
-    static final int cascadeHighBasket = 850;
-    static final int cascadeLowBasket = 480;
+    static final int cascadeHighBasket = -800;
+    static final int cascadeLowBasket = -450;
     int cascadeDown = 0;
     double dumpDeposit = 0.07;
     double dumpIdle = 0.82;
@@ -32,7 +32,7 @@ public abstract class Robot extends LinearOpMode {
 
     // ExtendingIntake Variables
 
-    public static int slideExtend = 980;
+    public static int slideExtend = 830; // 10.4329:1 to 8.3521:1 // 575 rpm to 718 rpm
     public  static int slideTarget;
     int slideIdle = 0;
 
@@ -43,7 +43,7 @@ public abstract class Robot extends LinearOpMode {
     public static double pitchCollect = 0.35;
     public static double pitchTarget = pitchCollect;
 
-    double intakeTimer = 1;
+    double intakeTimer = 0.5;
     ElapsedTime transferTimer = new ElapsedTime();
 
 
@@ -70,7 +70,7 @@ public abstract class Robot extends LinearOpMode {
         leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
         leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
         rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
 
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -83,7 +83,7 @@ public abstract class Robot extends LinearOpMode {
         intakePitch = hardwareMap.get(Servo.class, "intakePitch");
         activeIntake = hardwareMap.get(CRServo.class, "activeIntake");
 
-     // cascade.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        cascade.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         cascade.setTargetPosition(0);
         cascade.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 

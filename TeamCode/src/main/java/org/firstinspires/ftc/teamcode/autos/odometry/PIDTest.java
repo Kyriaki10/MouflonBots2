@@ -20,10 +20,20 @@ public class PIDTest extends PathFollower{
     @Override
     public void loop() {
         super.loop();
-        moveToPose(startPose, 0.5);
-        moveToPose(endPose, 0.5);
+        switch (autonomousState) {
+            case 1:
+                if (!poseReachedX(30)){
+                    moveX(30, 0.5);
+                } else setAutonomousState(2);
+            case 2:
+                if (!poseReachedX(0)) {
+                    moveX(-30, 0.5);
+                } else setAutonomousState(3);
+        }
+
 
         telemetry.addData("Current Position", odometry.getPose().getX());
+        telemetry.addData("state", autonomousState);
         telemetry.update();
     }
 }

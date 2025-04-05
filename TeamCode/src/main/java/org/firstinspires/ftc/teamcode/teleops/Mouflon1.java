@@ -2,13 +2,11 @@ package org.firstinspires.ftc.teamcode.teleops;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import java.util.jar.JarFile;
-
 @TeleOp(name = "TeleOp")
-public class Mouflon1 extends Robot {
+public class Mouflon1 extends Robot2 {
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode()  {
         initHardware();
 
         waitForStart();
@@ -28,12 +26,13 @@ public class Mouflon1 extends Robot {
     private void drivetrainControl2() {
         if (intakeState == IntakeState.INTAKE_EXTEND ||
                 intakeState == IntakeState.INTAKE_COLLECT ||
+                intakeState == IntakeState.INTAKE_RETRACT ||
                 cascadeState == CascadeState.CASCADE_EXTEND_HIGH ||
                 cascadeState == CascadeState.CASCADE_EXTEND_LOW ||
                 cascadeState == CascadeState.CASCADE_DEPOSIT) {
-            turnMultiplier = 0.3;
+            turnMultiplier = 0.4;
         } else {
-            turnMultiplier = 0.8;
+            turnMultiplier = 0.9;
         }
 
         double y = -gamepad1.left_stick_y;
@@ -69,7 +68,7 @@ public class Mouflon1 extends Robot {
                 }
                 break;
             case CASCADE_EXTEND_HIGH:
-                if (Math.abs(cascade.getCurrentPosition() - cascadeHighBasket) < 50) {
+                if (Math.abs(cascade.getCurrentPosition() - cascadeHighBasket) < 70) {
                     cascadeDump.setPosition(dumpDeposit);
                     cascadeTimer.reset();
                     cascadeState = CascadeState.CASCADE_DEPOSIT;
@@ -90,13 +89,15 @@ public class Mouflon1 extends Robot {
                 break;
             case CASCADE_RETRACT:
                 cascade.setTargetPosition(cascadeDown);
-                cascade.setPower(0.4);
+                cascade.setPower(1);
                 cascadeState = CascadeState.CASCADE_TRANSFER;
                 break;
             case CASCADE_TRANSFER:
-                if (Math.abs(cascade.getCurrentPosition() - cascadeDown) < 5) {
+                if (Math.abs(cascade.getCurrentPosition() - cascadeDown) < 20) {
                     cascade.setPower(0);
+                    sleep(50);
                     cascade.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    sleep(20);
                     cascade.setTargetPosition(0);
                     cascade.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     cascadeState = CascadeState.CASCADE_IDLE;
@@ -148,10 +149,12 @@ public class Mouflon1 extends Robot {
                 }
                 break;
             case INTAKE_RETRACT:
-                if (Math.abs(intakeSlide.getCurrentPosition() - slideIdle) < 5) {
+                if (Math.abs(intakeSlide.getCurrentPosition() - slideIdle) < 20) {
                     activeIntake.setPower(1);
                     intakeSlide.setPower(0);
+                    sleep(50);
                     intakeSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    sleep(20);
                     intakeSlide.setTargetPosition(0);
                     intakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     transferTimer.reset();

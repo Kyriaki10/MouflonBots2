@@ -71,21 +71,27 @@ public abstract class RobotAuto extends OpMode {
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//
+//        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//
+//        leftFront.setTargetPosition(leftFrontTarget);
+//        leftBack.setTargetPosition(leftBackTarget);
+//        rightFront.setTargetPosition(rightFrontTarget);
+//        rightBack.setTargetPosition(rightBackTarget);
+//
+//        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        leftFront.setTargetPosition(leftFrontTarget);
-        leftBack.setTargetPosition(leftBackTarget);
-        rightFront.setTargetPosition(rightFrontTarget);
-        rightBack.setTargetPosition(rightBackTarget);
-
-        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         cascade = hardwareMap.get(DcMotorEx.class, "cascade");
         cascadeDump = hardwareMap.get(Servo.class, "cascadeDump");
@@ -115,7 +121,7 @@ public abstract class RobotAuto extends OpMode {
                 RevHubOrientationOnRobot.UsbFacingDirection.UP)));
         imu.resetYaw();
 
-        telemetry = new MultipleTelemetry(FtcDashboard.getInstance().getTelemetry());
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
     }
