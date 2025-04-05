@@ -34,6 +34,7 @@ public class sampleAuto extends  PathFollower {
                     stopRobot();
                 }
         }
+
         telemetry.addData( "CurrentPosition", odometry.getPose());
         telemetry.addData("poseX", odometry.getPose().getX());
         telemetry.addData("targetX", scorePose.getX());
